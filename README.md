@@ -28,8 +28,8 @@ A Node.js tool to download social media **videos** and **images** (supports **Fa
 ## Installation
 
 ```bash
-git clone https://github.com/<your-username>/social-media-frame-extractor.git
-cd social-media-frame-extractor
+git clone https://github.com/<your-username>/social-media-extractor.git
+cd social-media-extractor
 npm install
 ```
 
