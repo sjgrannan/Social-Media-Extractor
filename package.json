@@ -1,0 +1,24 @@
+{
+  "name": "fbscripts",
+  "version": "1.0.0",
+  "description": "Download social media videos and images, extract frames, and save locally.",
+  "main": "downloadFacebookReel.js",
+  "scripts": {
+    "cleanup": "node cleanup_frames.js",
+    "download-videos": "node downloadSocialMedia.js",
+    "download-images": "node downloadSocialMediaImages.js",
+    "extract": "node cliMenu.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "inquirer": "^12.9.6",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.48.0",
+    "yt-dlp-exec": "^1.0.2"
+  }
+}
