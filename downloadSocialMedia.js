@@ -31,15 +31,10 @@ function askQuestion(query) {
     showHelp();
     process.exit(0);
   }
-  let fps = process.argv[3] ? parseInt(process.argv[3], 10) : null;
+  let fps = process.argv[3] ? parseInt(process.argv[3], 10) : 10;
 
   if (!input) {
     input = await askQuestion('Enter Reel/Video URL (see supported platforms with --help): ');
-  }
-
-  if (!fps) {
-    const fpsInput = await askQuestion('Enter FPS (default 10): ');
-    fps = fpsInput ? parseInt(fpsInput, 10) : 10;
   }
 
   const outputDir = path.resolve('./frames');
