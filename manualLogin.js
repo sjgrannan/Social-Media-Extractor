@@ -1,32 +1,41 @@
-// manualLogin.js
 import { chromium } from 'playwright';
-import fs from 'fs';
 import path from 'path';
 
 export async function facebookManualLogin() {
-  const platform = 'facebook';
-  const loginUrls = {
-    facebook: 'https://www.facebook.com/login',
-  };
+  const browser = await chromium.launch({
+    headless: false,
+    args: ['--start-maximized']
+  });
+  const context = await browser.newContext();
+  const page = await context.newPage();
 
-  const browser = await chromium.launch({ headless: false });
-  const page = await browser.newPage();
+  await page.goto('https://www.facebook.com/login', { waitUntil: 'networkidle' });
 
-  await page.goto(loginUrls[platform]);
-  console.log('Please log in manually in the opened browser window...');
+  // Wait for username input
+  const usernameInput = page.locator('input[name="email"]');
+  await usernameInput.waitFor({ state: 'visible', timeout: 15000 });
 
-  const storagePath = path.resolve(`./facebook_cookies.json`);
+  // Wait for password input
+  const passwordInput = page.locator('input[name="pass"]');
+  await passwordInput.waitFor({ state: 'visible', timeout: 15000 });
 
-  // Poll every 2 seconds to check if cookies are present
+  // Poll cookies until Facebook login is detected
   while (true) {
-    const cookies = await page.context().cookies();
-    if (cookies.length > 0) {
-      await page.context().storageState({ path: storagePath });
-      console.log(`Saved cookies to ${storagePath}`);
+    const cookies = await context.cookies();
+    const loggedIn = cookies.some(c => c.name === 'c_user');
+    if (loggedIn) {
+      const storagePath = path.resolve('./facebook_cookies.json');
+      await context.storageState({ path: storagePath });
+      console.log(`✅ Saved cookies to ${storagePath}`);
       break;
     }
-    await page.waitForTimeout(2000);
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   await browser.close();
+}
+
+// Run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  facebookManualLogin();
 }
