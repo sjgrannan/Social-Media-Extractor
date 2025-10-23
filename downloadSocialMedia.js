@@ -50,9 +50,10 @@ function askQuestion(query) {
     const match = input.match(/reel\/([^\/\?]+)/);
     reelId = match ? match[1] : 'insta';
     contentUrl = input;
-  } else if (input.includes('facebook.com/reel/')) {
+  } else if (input.includes('facebook.com/reel/') || input.includes('facebook.com/watch/')) {
     platform = 'facebook';
-    const match = input.match(/reel\/([^\/\?]+)/);
+    // Support both /reel/{id} and /watch?v={id} formats
+    const match = input.match(/(?:reel\/|v=)([^\/\?&]+)/);
     reelId = match ? match[1] : 'fb';
     contentUrl = input;
   } else if (input.includes('reddit.com') || input.includes('v.redd.it') || input.includes('.mp4')) {
@@ -217,8 +218,15 @@ function askQuestion(query) {
     console.log(`Downloading YouTube Shorts: ${contentUrl}`);
     try {
       await ytDlp(contentUrl, {
-        f: 'mp4',
+        f: 'bv*+ba/b',
         o: path.join(outputDir, `youtube_${reelId}.mp4`),
+        mergeOutputFormat: 'mp4',
+        userAgent: 'com.google.android.youtube/19.20.33 (Linux; U; Android 13) gzip',
+        addHeader: [
+          'Referer: https://www.youtube.com/',
+          'Origin: https://www.youtube.com'
+        ],
+        extractorArgs: 'youtube:player_client=android',
         verbose: true
       });
     } catch (err) {
@@ -238,6 +246,10 @@ function askQuestion(query) {
         .on('error', reject)
         .run();
     });
+    console.log('Frames extracted to', outputDir);
+  }
+})();
+
     console.log('Frames extracted to', outputDir);
   }
 })();
